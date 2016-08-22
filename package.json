@@ -1,0 +1,33 @@
+{
+  "name": "pressanykey",
+  "productName": "Press Any Key",
+  "version": "0.0.1",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thmsbfft/pressanykey.git"
+  },
+  "main": "main.js",
+  "scripts": {
+    "start": "electron main.js",
+    "build": "gulp build && electron-packager . Press Any Key --overwrite --out=build --app-version=0.0.3 --platform=darwin --arch=x64 --icon=icon.icns --ignore=\"(node_modules/(electron-packager|electron-prebuilt))|(src/sass)|(src/js/main)|(node_modules/gulp-[a-z]+)|build|gulpfile|stdout.log\""
+  },
+  "devDependencies": {
+    "electron-localshortcut": "^0.6.0",
+    "electron-packager": "^7.0.4",
+    "electron-prebuilt": "^1.2.5",
+    "gm": "^1.22.0",
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-copy": "0.0.2",
+    "gulp-exec": "^2.1.2",
+    "gulp-livereload": "^3.8.1",
+    "gulp-preprocess": "^2.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-run": "^1.7.1",
+    "gulp-sass": "^2.3.2",
+    "openurl": "^1.1.1",
+    "preprocess": "^3.0.2"
+  },
+  "license": "MIT"
+}
