@@ -9,7 +9,7 @@ function Keyboard(parameters) {
 	this.keyboard = undefined;
 
 	this.debug = {
-		center: 'undefined'
+		center: undefined
 	}
 
 	// this.resize();
@@ -20,11 +20,15 @@ Keyboard.prototype.attachEvents = function() {
 
 	window.addEventListener('keypress', function(e) {
 
-		e.preventDefault();
-		var char = String.fromCharCode(e.keyCode);
-		console.log(char);
+		console.log(e.keyCode);
 
-	});
+		var char = String.fromCharCode(e.keyCode);
+		
+		this.addToPath(e.key);
+		console.log(char, e.key);
+		e.preventDefault();
+
+	}.bind(this));
 
 	window.addEventListener('resize', function(e) {
 		this.resize();
@@ -43,8 +47,7 @@ Keyboard.prototype.resize = function() {
 	this.debug.center.position = paper.view.center;
 
 	// Responsive
-	this.keyboard.setPosition(paper.view.viewSize.width - this.keyboard.bounds.width/2, paper.view.viewSize.height/2);
-	// console.log(this.keyboard.bounds);
+	this.keyboard.setPosition(paper.view.viewSize.width/2, paper.view.viewSize.height/2);
 
 	paper.view.draw();
 
@@ -52,16 +55,22 @@ Keyboard.prototype.resize = function() {
 
 Keyboard.prototype.initCanvas = function() {
 
-	console.log('Init');
-
 	// Debug
 	this.debug.center = new paper.Shape.Circle(new paper.Point(80, 50), 2);
 	this.debug.center.fillColor = "red";
 
 	// Keyboard Init
 	this.keyboard = paper.project.importSVG(document.getElementById('keyboard_svg')).children[0];
-	this.keyboard.strokeWidth = 1; 
+	this.keyboard.strokeColor = "#8e8e8e";
+	this.keyboard.strokeWidth = 1;
 
 	this.resize();
+
+}
+
+Keyboard.prototype.addToPath = function(key) {
+
+	// console.log(this.keyboard.children);
+	this.keyboard.children[0].strokeColor = "red";
 
 }
