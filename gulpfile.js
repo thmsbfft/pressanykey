@@ -15,6 +15,7 @@ var main = [
 ];
 
 var renderer = [
+	'src/js/renderer/paper.js',
 	'src/js/renderer/utils.js',
 	'src/js/renderer/renderer.js',
 	'src/js/renderer/Keyboard.js'
