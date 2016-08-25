@@ -61,8 +61,20 @@ Keyboard.prototype.initCanvas = function() {
 
 	// Keyboard Init
 	this.keyboard = paper.project.importSVG(document.getElementById('keyboard_svg')).children[0];
-	this.keyboard.strokeColor = "#8e8e8e";
-	this.keyboard.strokeWidth = 1;
+	
+	this.keyboard.style = {
+		fillColor: "#808080",
+		strokeColor: new paper.Color(1,1,1,0.4),
+		strokeWidth: 2,
+		shadowColor: new paper.Color(0,0,0,0.5),
+		shadowBlur: 4,
+		shadowOffset: new paper.Point(0, 2),
+		borderRadius: 8
+	}
+
+	// this.keyboard.fillColor = "#808080";
+	// this.keyboard.strokeColor = new paper.Color(1,1,1,0.4);
+	// this.keyboard.strokeWidth = 1;
 
 	this.resize();
 
