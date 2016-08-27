@@ -13,7 +13,7 @@ function Keyboard(parameters) {
 	}
 
 	// this.resize();
-	this.initCanvas();
+	paper.project.importSVG('../keyboard.svg', { onLoad: this.initKeyboard.bind(this) });
 }
 
 Keyboard.prototype.attachEvents = function() {
@@ -45,6 +45,7 @@ Keyboard.prototype.resize = function() {
 
 	// Debug
 	this.debug.center.position = paper.view.center;
+	this.debug.center.opacity = 0;
 
 	// Responsive
 	this.keyboard.setPosition(paper.view.viewSize.width/2, paper.view.viewSize.height/2);
@@ -53,28 +54,38 @@ Keyboard.prototype.resize = function() {
 
 }
 
-Keyboard.prototype.initCanvas = function() {
+Keyboard.prototype.initKeyboard = function(keyboard, svg) {
 
 	// Debug
 	this.debug.center = new paper.Shape.Circle(new paper.Point(80, 50), 2);
 	this.debug.center.fillColor = "red";
 
-	// Keyboard Init
-	this.keyboard = paper.project.importSVG(document.getElementById('keyboard_svg')).children[0];
-	
+	// Keyboard
+	this.keyboard = keyboard.children[0];
+
 	this.keyboard.style = {
 		fillColor: "#808080",
 		strokeColor: new paper.Color(1,1,1,0.4),
-		strokeWidth: 2,
-		shadowColor: new paper.Color(0,0,0,0.5),
+		strokeWidth: 1.5,
+		shadowColor: new paper.Color(0,0,0,0.45),
 		shadowBlur: 4,
 		shadowOffset: new paper.Point(0, 2),
 		borderRadius: 8
 	}
 
-	// this.keyboard.fillColor = "#808080";
-	// this.keyboard.strokeColor = new paper.Color(1,1,1,0.4);
-	// this.keyboard.strokeWidth = 1;
+	for (var i = this.keyboard.children.length - 1; i >= 0; i--) {
+		
+		// Style keys individually
+		this.keyboard.children[i].strokeColor = new paper.Color(Math.random(), Math.random(), Math.random());
+		this.keyboard.children[i].strokeColor = {
+			gradient: {
+				stops: [new paper.Color(1,1,1,0.3), new paper.Color(1,1,1,0.2)]
+			},
+			origin: this.keyboard.children[i].bounds.topCenter,
+			destination: this.keyboard.children[i].bounds.bottomCenter
+		}
+
+	};
 
 	this.resize();
 
@@ -83,6 +94,6 @@ Keyboard.prototype.initCanvas = function() {
 Keyboard.prototype.addToPath = function(key) {
 
 	// console.log(this.keyboard.children);
-	this.keyboard.children[0].strokeColor = "red";
+	this.keyboard.strokeColor = "red";
 
 }
