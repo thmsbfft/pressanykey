@@ -27,7 +27,8 @@
     "gulp-run": "^1.7.1",
     "gulp-sass": "^2.3.2",
     "openurl": "^1.1.1",
-    "preprocess": "^3.0.2"
+    "preprocess": "^3.0.2",
+    "svg-to-png": "^3.1.0"
   },
   "license": "MIT"
 }

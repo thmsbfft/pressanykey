@@ -17,6 +17,8 @@ var shell = require('electron').shell;
 var exec = require('child_process').exec;
 var execSync = require('child_process').execSync;
 var gm = require('gm');
+var svg_to_png = require('svg-to-png');
+// var sharp = require('sharp');
 
 app.on('ready', function() {
 

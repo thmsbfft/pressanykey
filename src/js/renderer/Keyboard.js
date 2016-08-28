@@ -18,9 +18,13 @@ function Keyboard(parameters) {
 		boundingBox: undefined
 	}
 
-	paper.project.importSVG('../keyboard.svg', { onLoad: this.initKeyboard.bind(this) });
+	paper.project.importSVG('../keyboard.svg', { onLoad: this.initKeyboard.bind(this), onError: this.onErr.bind(this) });
 	paper.view.zoom = 0.5;
 
+}
+
+Keyboard.prototype.onErr = function(err) {
+	console.log(err);
 }
 
 Keyboard.prototype.attachEvents = function() {
@@ -67,6 +71,8 @@ Keyboard.prototype.resize = function() {
 }
 
 Keyboard.prototype.initKeyboard = function(keyboard, svg) {
+
+	console.log('Imported!');
 
 	// Debug
 	this.debug.center = new paper.Shape.Circle(new paper.Point(80, 50), 2);
@@ -304,22 +310,21 @@ Keyboard.prototype.sendToPrinter = function() {
 
 	var pathCopy = this.path.clone();
 	var pathBox = new paper.Path.Rectangle(this.debug.boundingBox.bounds);
+	
 	pathBox.strokeColor = new paper.Color(0,0,0,0);
-	pathBox.fillColor = new paper.Color(0,0,0,0);
-
-	pathCopy.strokeColor = {
-		gradient: {
-			stops: [new paper.Color('#000000'), new paper.Color('#000000')]
-		},
-		origin: this.debug.boundingBox.bounds.leftCenter,
-		destination: this.debug.boundingBox.bounds.rightCenter
-	}
-
+	pathBox.fillColor = new paper.Color(1,1,1);
+	
+	pathCopy.strokeColor = "black";
 	pathCopy.strokeWidth = 12;
 
 	var exports = new paper.Group([pathBox, pathCopy]);
 
-	var svg = exports.exportSVG({ asString: true });
+	// Format for png conversion
+	var svg = '<?xml version="1.0" encoding="utf-8"?>';
+	svg += '<svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="2136px" height="718px" viewBox="-482 180 2136 718" enable-background="new -482 180 2136 718" xml:space="preserve">';
+	svg += exports.exportSVG({ asString: true });
+	svg += '</svg>';
+
 	console.log(svg);
 
 	ipcRenderer.send('print', this.text.join(''), svg);
