@@ -73,27 +73,40 @@ Keyboard.prototype.startPrinting = function(text, svg) {
 	var sec = pad(new Date().getSeconds());
 	var time = hrs + '-' + min + '-' + sec;
 
-	var fileName = date + '-' + time + '-' + text + '.svg';
+	var svgFileName = date + '-' + time + '.svg';
+	var pngFileName = date + '-' + time + '.png';
+	var jpgFileName = date + '-' + time + '.jpg';
 
-	fs.writeFile(this.outputFolder + fileName, svg, function(err) {
+	fs.writeFile(this.outputFolder + svgFileName, svg, function(err) {
 		// @if NODE_ENV='development'
 		if(err) c.log(err);
 		// @endif
 	});
 
-	svg_to_png.convert(this.outputFolder + fileName, this.outputFolder, {defaultWidth: "384px"})
+	svg_to_png.convert(this.outputFolder + svgFileName, this.outputFolder, {defaultWidth: "384px"})
 	.then( function(){
-		// sharp(this.outputFolder + fileName)
-		// 	.resize(384)
-		// 	.toFile(this.outputFolder + fileName, function(err) {
-		// 		c.log(err);
-		// 	});
-	});
+		c.log('Converting for printer');
+		gm(this.outputFolder + pngFileName)
+			.resize(384)
+			.write(this.outputFolder + pngFileName, function(err) {
+				if(!err) c.log('Done converting');
+				if(err) c.log(err);
+			});
+			// .background('white')
+			// .flatten()
+			// .toFormat('jpg')
+			// .write(this.outputFolder + jpgFileName, function(err) {
+			// 	if(err) throw err;
+			// 	// @if NODE_ENV='development'
+			// 	if(!err) c.log('Done converting');
+			// 	// @endif
+			// });
+	}.bind(this));
 
 	// @if NODE_ENV='development'
 	c.log('PRINTING');
-	c.log(text);
-	c.log(svg);
+	// c.log(text);
+	// c.log(svg);
 	// @endif
 
 }
