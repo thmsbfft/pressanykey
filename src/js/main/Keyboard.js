@@ -13,8 +13,8 @@ function Keyboard() {
 
 	this.isFullScreen = false;
 	this.browserWindow = new BrowserWindow({
-	  width: 800,
-	  height: 600,
+	  width: 1500,
+	  height: 700,
 	  frame: false,
 	  backgroundColor: '#141414',
 	  show: false,
@@ -37,8 +37,12 @@ Keyboard.prototype.attachEvents = function() {
 
 	this.browserWindow.webContents.on('dom-ready', this.onReady.bind(this));
 
-	ipcMain.on('print', function(event, text, svg) {
-		this.startPrinting(text, svg);
+	// ipcMain.on('print', function(event, text, svg) {
+	// 	this.startPrinting(text, svg);
+	// }.bind(this));
+
+	ipcMain.on('print', function(event, text, blob) {
+		this.startPrinting(text, blob);
 	}.bind(this));
 
 }
@@ -61,7 +65,23 @@ Keyboard.prototype.toggleFullScreen = function() {
 
 }
 
-Keyboard.prototype.startPrinting = function(text, svg) {
+Keyboard.prototype.decodeBase64Image = function(dataString) {
+
+	var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+	    response = {};
+
+	  if (matches.length !== 3) {
+	    return new Error('Invalid input string');
+	  }
+
+	  response.type = matches[1];
+	  response.data = new Buffer(matches[2], 'base64');
+
+	  return response;
+
+}
+
+Keyboard.prototype.startPrinting = function(text, blob) {
 
 	var day = pad(new Date().getDate());
 	var month = pad(new Date().getMonth() + 1);
@@ -77,31 +97,43 @@ Keyboard.prototype.startPrinting = function(text, svg) {
 	var pngFileName = date + '-' + time + '.png';
 	var jpgFileName = date + '-' + time + '.jpg';
 
-	fs.writeFile(this.outputFolder + svgFileName, svg, function(err) {
-		// @if NODE_ENV='development'
-		if(err) c.log(err);
-		// @endif
-	});
+	var imageBuffer = this.decodeBase64Image(blob);
 
-	svg_to_png.convert(this.outputFolder + svgFileName, this.outputFolder, {defaultWidth: "384px"})
-	.then( function(){
-		c.log('Converting for printer');
-		gm(this.outputFolder + pngFileName)
-			.resize(384)
-			.write(this.outputFolder + pngFileName, function(err) {
-				if(!err) c.log('Done converting');
-				if(err) c.log(err);
-			});
-			// .background('white')
-			// .flatten()
-			// .toFormat('jpg')
-			// .write(this.outputFolder + jpgFileName, function(err) {
-			// 	if(err) throw err;
-			// 	// @if NODE_ENV='development'
-			// 	if(!err) c.log('Done converting');
-			// 	// @endif
-			// });
+	fs.writeFile(this.outputFolder + jpgFileName, imageBuffer.data, function(err) {
+		if(err) throw err;
+		c.log('Saved');
 	}.bind(this));
+
+	// fs.writeFile(this.outputFolder + jpgFileName, blob, 'binary', function(err) {
+	// 	if (err) throw err;
+	// 	c.log('Saved');
+	// }.bind(this));
+
+	// fs.writeFile(this.outputFolder + svgFileName, svg, function(err) {
+	// 	// @if NODE_ENV='development'
+	// 	if(err) c.log(err);
+	// 	// @endif
+	// });
+
+	// svg_to_png.convert(this.outputFolder + svgFileName, this.outputFolder, {defaultWidth: "384px"})
+	// .then( function(){
+	// 	c.log('Converting for printer');
+	// 	// gm(this.outputFolder + pngFileName)
+	// 	// 	.resize(384)
+	// 	// 	.write(this.outputFolder + pngFileName, function(err) {
+	// 	// 		if(!err) c.log('Done converting');
+	// 	// 		if(err) c.log(err);
+	// 	// 	});
+	// 		// .background('white')
+	// 		// .flatten()
+	// 		// .toFormat('jpg')
+	// 		// .write(this.outputFolder + jpgFileName, function(err) {
+	// 		// 	if(err) throw err;
+	// 		// 	// @if NODE_ENV='development'
+	// 		// 	if(!err) c.log('Done converting');
+	// 		// 	// @endif
+	// 		// });
+	// }.bind(this));
 
 	// @if NODE_ENV='development'
 	c.log('PRINTING');

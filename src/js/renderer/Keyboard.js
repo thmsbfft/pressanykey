@@ -308,29 +308,28 @@ Keyboard.prototype.delete = function() {
 
 Keyboard.prototype.sendToPrinter = function() {
 
+	var pathBox = new paper.Path.Rectangle(paper.view.bounds);
 	var pathCopy = this.path.clone();
-	var pathBox = new paper.Path.Rectangle(this.debug.boundingBox.bounds);
 	
-	pathBox.strokeColor = new paper.Color(0,0,0,0);
-	pathBox.fillColor = new paper.Color(1,1,1);
+	pathBox.fillColor = "white";
+	pathBox.sendToBack();
 	
+	pathCopy.bringToFront();
 	pathCopy.strokeColor = "black";
 	pathCopy.strokeWidth = 12;
 
-	var exports = new paper.Group([pathBox, pathCopy]);
+	this.keyboard.opacity = 0;
+	document.getElementsByTagName('body')[0].style.backgroundColor = "#FFFFFF";
 
-	// Format for png conversion
-	var svg = '<?xml version="1.0" encoding="utf-8"?>';
-	svg += '<svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="2136px" height="718px" viewBox="-482 180 2136 718" enable-background="new -482 180 2136 718" xml:space="preserve">';
-	svg += exports.exportSVG({ asString: true });
-	svg += '</svg>';
+	paper.view.draw();
 
-	console.log(svg);
-
-	ipcRenderer.send('print', this.text.join(''), svg);
+	ipcRenderer.send('print', this.text.join(''), this.canvas.toDataURL("image/jpeg"));
 
 	pathBox.remove();
 	pathCopy.remove();
+	document.getElementsByTagName('body')[0].style.backgroundColor = "#808080";
+	this.keyboard.opacity = 1;
+
 
 }
 
