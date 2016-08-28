@@ -19,7 +19,7 @@ function Keyboard(parameters) {
 	}
 
 	paper.project.importSVG('../keyboard.svg', { onLoad: this.initKeyboard.bind(this), onError: this.onErr.bind(this) });
-	paper.view.zoom = 0.5;
+	// paper.view.zoom = 0.5;
 
 }
 
@@ -316,14 +316,30 @@ Keyboard.prototype.sendToPrinter = function() {
 	
 	pathCopy.bringToFront();
 	pathCopy.strokeColor = "black";
-	pathCopy.strokeWidth = 12;
+	pathCopy.strokeWidth = 25;
 
 	this.keyboard.opacity = 0;
 	document.getElementsByTagName('body')[0].style.backgroundColor = "#FFFFFF";
 
 	paper.view.draw();
 
-	ipcRenderer.send('print', this.text.join(''), this.canvas.toDataURL("image/jpeg"));
+	// Format text for printing
+	for (var i = this.text.length - 1; i >= 0; i--) {
+		if(this.text[i] == 'meta' || this.text[i] == 'control' || this.text[i] == 'alt' || this.text[i] == 'shift' || this.text[i] == 'tab' || this.text[i] == 'capslock') {
+			this.text[i] = '░';
+		}
+	}
+
+	var exports = new paper.Group([pathBox, pathCopy]);
+
+	// Format svg for saving
+	var svg = exports.exportSVG({ asString: true });
+	var svg = '<?xml version="1.0" encoding="utf-8"?>';
+	svg += '<svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="2136px" height="718px" viewBox="-482 180 2136 718" enable-background="new -482 180 2136 718" xml:space="preserve">';
+	svg += exports.exportSVG({ asString: true });
+	svg += '</svg>';
+
+	ipcRenderer.send('print', this.text.join(''), this.canvas.toDataURL("image/jpeg"), svg);
 
 	pathBox.remove();
 	pathCopy.remove();

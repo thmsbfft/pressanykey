@@ -1,27 +1,41 @@
 var SerialPort = require('serialport');
-// var serialPort = new SerialPort('/dev/ttyUSB0', { baudrate: 9600 });
+var serialPort = new SerialPort('/dev/cu.usbserial', { baudrate: 9600 });
 var Printer = require('thermalprinter');
 
-SerialPort.list(function(err, ports) {
-	ports.forEach(function(port) {
-	    console.log(port.comName);
-	    console.log(port.pnpId);
-	    console.log(port.manufacturer);
-	 });
+process.argv.forEach(function(val, index) {
+	console.log(`${index}: ${val}`);
 });
 
-// serialPort.on('open', function() {
-// 	var printer = new Printer(serialPort);
-// 	printer.on('ready', function() {
-// 		printer
-// 			.indent(10)
-// 			.horizontalLine(16)
-// 			.bold(true)
-// 			.indent(10)
-// 			.printLine('first line')
-// 			.print(function() {
-// 				console.log('done');
-// 				process.exit();
-// 			});
-// 	});
+var text = decodeURI(process.argv[2]);
+var imagePath = __dirname + '/images/' + process.argv[3];
+
+console.log('Text: ', text);
+console.log('Image: ', imagePath);
+
+// SerialPort.list(function(err, ports) {
+// 	ports.forEach(function(port) {
+// 	    console.log(port.comName);
+// 	    console.log(port.pnpId);
+// 	    console.log(port.manufacturer);
+// 	 });
 // });
+
+serialPort.on('open', function() {
+	var printer = new Printer(serialPort);
+	// printer.setLineSpacing(2);
+	printer.on('ready', function() {
+		printer
+			.upsideDown(true)
+			.center(true)
+			.printLine('')
+			.printLine(text)
+			.printImage(imagePath)
+			.printLine('')
+			.printLine('')
+			.printLine('')
+			.print(function() {
+				console.log('done');
+				process.exit();
+			});
+	});
+});

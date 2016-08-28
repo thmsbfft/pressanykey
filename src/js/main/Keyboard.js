@@ -8,7 +8,8 @@ function Keyboard() {
 	c.log('[Keyboard] ✔');
 	// @endif
 
-	this.outputFolder = app.getPath('home') + '/pressanykey/';
+	// this.outputFolder = app.getPath('home') + '/pressanykey/';
+	this.outputFolder = __dirname + '/images/';
 	c.log(this.outputFolder);
 
 	this.isFullScreen = false;
@@ -41,8 +42,8 @@ Keyboard.prototype.attachEvents = function() {
 	// 	this.startPrinting(text, svg);
 	// }.bind(this));
 
-	ipcMain.on('print', function(event, text, blob) {
-		this.startPrinting(text, blob);
+	ipcMain.on('print', function(event, text, blob, svg) {
+		this.startPrinting(text, blob, svg);
 	}.bind(this));
 
 }
@@ -81,7 +82,7 @@ Keyboard.prototype.decodeBase64Image = function(dataString) {
 
 }
 
-Keyboard.prototype.startPrinting = function(text, blob) {
+Keyboard.prototype.startPrinting = function(text, blob, svg) {
 
 	var day = pad(new Date().getDate());
 	var month = pad(new Date().getMonth() + 1);
@@ -94,51 +95,46 @@ Keyboard.prototype.startPrinting = function(text, blob) {
 	var time = hrs + '-' + min + '-' + sec;
 
 	var svgFileName = date + '-' + time + '.svg';
-	var pngFileName = date + '-' + time + '.png';
 	var jpgFileName = date + '-' + time + '.jpg';
+	var txtFileName = date + '-' + time + '.txt';
 
 	var imageBuffer = this.decodeBase64Image(blob);
 
 	fs.writeFile(this.outputFolder + jpgFileName, imageBuffer.data, function(err) {
 		if(err) throw err;
 		c.log('Saved');
+
+		// Resize image for printer
+		gm(this.outputFolder + jpgFileName)
+			.resize(384)
+			.flop()
+			.flip()
+			.write(this.outputFolder + jpgFileName, function(err) {
+				if(err) throw err;
+				
+				c.log('Done resizing');
+
+				// Send to printer script
+				exec('node printer.js' + ' ' +'"'+ encodeURI(text) +'"'+ ' ' + jpgFileName, function (error, stdout, stderr) {
+					if(error == null) c.log('Printed');
+					if(error) c.log(error);
+				}.bind(this));
+
+			}.bind(this));
 	}.bind(this));
 
-	// fs.writeFile(this.outputFolder + jpgFileName, blob, 'binary', function(err) {
-	// 	if (err) throw err;
-	// 	c.log('Saved');
-	// }.bind(this));
+	// Save SVG
+	fs.writeFile(this.outputFolder + svgFileName, svg, function(err) {
+		// @if NODE_ENV='development'
+		if(err) c.log(err);
+		// @endif
+	});
 
-	// fs.writeFile(this.outputFolder + svgFileName, svg, function(err) {
-	// 	// @if NODE_ENV='development'
-	// 	if(err) c.log(err);
-	// 	// @endif
-	// });
-
-	// svg_to_png.convert(this.outputFolder + svgFileName, this.outputFolder, {defaultWidth: "384px"})
-	// .then( function(){
-	// 	c.log('Converting for printer');
-	// 	// gm(this.outputFolder + pngFileName)
-	// 	// 	.resize(384)
-	// 	// 	.write(this.outputFolder + pngFileName, function(err) {
-	// 	// 		if(!err) c.log('Done converting');
-	// 	// 		if(err) c.log(err);
-	// 	// 	});
-	// 		// .background('white')
-	// 		// .flatten()
-	// 		// .toFormat('jpg')
-	// 		// .write(this.outputFolder + jpgFileName, function(err) {
-	// 		// 	if(err) throw err;
-	// 		// 	// @if NODE_ENV='development'
-	// 		// 	if(!err) c.log('Done converting');
-	// 		// 	// @endif
-	// 		// });
-	// }.bind(this));
-
-	// @if NODE_ENV='development'
-	c.log('PRINTING');
-	// c.log(text);
-	// c.log(svg);
-	// @endif
+	// Save Text
+	fs.writeFile(this.outputFolder + txtFileName, text, function(err) {
+		// @if NODE_ENV='development'
+		if(err) c.log(err);
+		// @endif
+	});
 
 }
