@@ -28,7 +28,8 @@
     "gulp-sass": "^2.3.2",
     "openurl": "^1.1.1",
     "preprocess": "^3.0.2",
-    "svg-to-png": "^3.1.0"
+    "serialport": "^4.0.1",
+    "thermalprinter": "^0.3.8"
   },
   "license": "MIT"
 }
