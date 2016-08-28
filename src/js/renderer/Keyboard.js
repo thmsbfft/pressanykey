@@ -8,9 +8,12 @@ function Keyboard(parameters) {
 
 	this.keyboard = undefined;
 	this.keyMap = undefined;
+	this.path = new paper.Path();
+	this.graphics = undefined;
 
 	this.debug = {
-		center: undefined
+		center: undefined,
+		boundingBox: undefined
 	}
 
 	paper.project.importSVG('../keyboard.svg', { onLoad: this.initKeyboard.bind(this) });
@@ -24,10 +27,10 @@ Keyboard.prototype.attachEvents = function() {
 
 		// console.log(e.key);
 		// console.log('Loc', e.location);
-		var char = String.fromCharCode(e.keyCode);
+		// var char = String.fromCharCode(e.keyCode);
+		// console.log(char, e.key);
 		
-		this.addToPath(e.key.toLowerCase(), e.location);
-		console.log(char, e.key);
+		this.onKeyDown(e.key.toLowerCase(), e.location);
 		e.preventDefault();
 
 	}.bind(this));
@@ -47,11 +50,10 @@ Keyboard.prototype.resize = function() {
 
 	// Debug
 	this.debug.center.position = paper.view.center;
-	this.debug.center.opacity = 0;
+	this.debug.boundingBox.position = paper.view.center;
 
 	// Responsive
-	this.keyboard.setPosition(paper.view.viewSize.width/1.2, paper.view.viewSize.height/2 + 100);
-	// this.keyboard.setPosition(paper.view.viewSize.width/2, paper.view.viewSize.height/2);
+	this.graphics.position = paper.view.center;
 
 	paper.view.draw();
 
@@ -65,6 +67,7 @@ Keyboard.prototype.initKeyboard = function(keyboard, svg) {
 
 	// Keyboard
 	this.keyboard = keyboard.children[0];
+	// this.keyboard.applyMatrix = false;
 
 	this.keyboard.style = {
 		fillColor: "#808080",
@@ -76,9 +79,14 @@ Keyboard.prototype.initKeyboard = function(keyboard, svg) {
 		borderRadius: 8
 	}
 
+	// Debug
+	this.debug.boundingBox = new paper.Path.Rectangle(this.keyboard.bounds);
+	// this.debug.boundingBox.strokeColor = "blue";
+
 	for (var i = this.keyboard.children.length - 1; i >= 0; i--) {
 		
 		// Style keys individually
+
 		this.keyboard.children[i].strokeColor = new paper.Color(Math.random(), Math.random(), Math.random());
 		this.keyboard.children[i].strokeColor = {
 			gradient: {
@@ -88,9 +96,7 @@ Keyboard.prototype.initKeyboard = function(keyboard, svg) {
 			destination: this.keyboard.children[i].bounds.bottomCenter
 		}
 
-	};
-
-	// this.keyboard.children[59].strokeColor = "red";
+	}
 
 	this.keyMap = [
 		"1",
@@ -155,19 +161,31 @@ Keyboard.prototype.initKeyboard = function(keyboard, svg) {
 		"enter",
 	]
 
+	this.initPath();
+
 	this.resize();
 
 }
 
-Keyboard.prototype.addToPath = function(key, location) {
+Keyboard.prototype.initPath = function() {
 
-	console.log(location);
+	this.path.style = {
+		strokeColor : "red",
+		strokeWidth : 2
+	}
+
+	this.graphics = new paper.Group([this.keyboard, this.path]);
+	this.graphics.bringToFront();
+
+}
+
+Keyboard.prototype.onKeyDown = function(key, location) {
+
+	var index = null
 
 	if(location == 1 || location == 0) {
 
 		// Left side
-
-		var index = null
 		
 		for (var i = this.keyMap.length - 1; i >= 0; i--) {
 			if(this.keyMap[i] == key) index = i;
@@ -175,11 +193,7 @@ Keyboard.prototype.addToPath = function(key, location) {
 
 		if(index == null) {
 			console.log('No match');
-			return;
 		}
-
-		console.log(index);
-		this.keyboard.children[index].strokeColor = "red";
 
 	}
 	else if(location == 2) {
@@ -187,26 +201,33 @@ Keyboard.prototype.addToPath = function(key, location) {
 		// Right side
 
 		if(key == "meta") {
-			this.keyboard.children[52].strokeColor = "blue";
+			index = 52;
 		}
 
 		if(key == "alt") {
-			this.keyboard.children[54].strokeColor = "blue";
+			index = 54;
 		}
 
 		if(key == "control") {
-			this.keyboard.children[56].strokeColor = "blue";
+			index = 56;
 		}
 
 		if(key == "shift") {
-			this.keyboard.children[58].strokeColor = "blue";
+			index = 58;
 		}
 
 	}
 
-	
+	this.addToPath(index);
 
-	// this.keyboard.strokeColor = "red";
+}
+
+Keyboard.prototype.addToPath = function(index) {
+
+	this.keyboard.children[index].strokeColor = "red";
+
+	this.path.add(this.keyboard.children[index].bounds.center);
+	this.path.smooth();
 
 	paper.view.draw();
 
