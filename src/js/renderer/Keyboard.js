@@ -11,6 +11,8 @@ function Keyboard(parameters) {
 	this.path = new paper.Path();
 	this.graphics = undefined;
 
+	this.text = [];
+
 	this.debug = {
 		center: undefined,
 		boundingBox: undefined
@@ -33,6 +35,11 @@ Keyboard.prototype.attachEvents = function() {
 		this.onKeyDown(e.key.toLowerCase(), e.location);
 		e.preventDefault();
 
+	}.bind(this));
+
+	window.addEventListener('keyup', function(e) {
+		this.onKeyUp(e.key.toLowerCase(), e.location);
+		e.preventDefault();
 	}.bind(this));
 
 	window.addEventListener('resize', function(e) {
@@ -75,8 +82,7 @@ Keyboard.prototype.initKeyboard = function(keyboard, svg) {
 		strokeWidth: 1.5,
 		shadowColor: new paper.Color(0,0,0,0.45),
 		shadowBlur: 4,
-		shadowOffset: new paper.Point(0, 2),
-		borderRadius: 8
+		shadowOffset: new paper.Point(0, 2)
 	}
 
 	// Debug
@@ -170,8 +176,18 @@ Keyboard.prototype.initKeyboard = function(keyboard, svg) {
 Keyboard.prototype.initPath = function() {
 
 	this.path.style = {
-		strokeColor : "red",
-		strokeWidth : 2
+		strokeWidth : 6,
+		fillColor: new paper.Color(0,0,0,0),
+		strokeCap : 'round',
+		strokeJoin : 'round'
+	}
+
+	this.path.strokeColor = {
+		gradient: {
+			stops: [new paper.Color('#00FFF4'), new paper.Color('#1F00FF')]
+		},
+		origin: this.debug.boundingBox.bounds.leftCenter,
+		destination: this.debug.boundingBox.bounds.rightCenter
 	}
 
 	this.graphics = new paper.Group([this.keyboard, this.path]);
@@ -179,7 +195,7 @@ Keyboard.prototype.initPath = function() {
 
 }
 
-Keyboard.prototype.onKeyDown = function(key, location) {
+Keyboard.prototype.locateKey = function(key, location) {
 
 	var index = null
 
@@ -218,17 +234,104 @@ Keyboard.prototype.onKeyDown = function(key, location) {
 
 	}
 
+	return index;
+
+}
+
+Keyboard.prototype.onKeyDown = function(key, location) {
+
+	var index = this.locateKey(key, location);
+
+	this.keyboard.children[index].shadowColor = new paper.Color(0,0,0,0.2);
+	this.keyboard.children[index].shadowBlur = 1;
+	this.keyboard.children[index].shadowOffset = new paper.Point(0, 1);
+
+	if(key == "backspace") {
+		this.delete();
+		return;
+	}
+
+	if(key == "enter") {
+		if(this.path.segments.length > 1) {
+			this.sendToPrinter();
+			this.resetAll();
+		}
+		return;
+	}
+
+	this.addToText(key);
 	this.addToPath(index);
+
+}
+
+Keyboard.prototype.onKeyUp = function(key, location) {
+
+	var index = this.locateKey(key, location);
+
+	this.keyboard.children[index].shadowColor = new paper.Color(0,0,0,0.45);
+	this.keyboard.children[index].shadowBlur = 4;
+	this.keyboard.children[index].shadowOffset = new paper.Point(0, 2);
+
+	paper.view.draw();
 
 }
 
 Keyboard.prototype.addToPath = function(index) {
 
-	this.keyboard.children[index].strokeColor = "red";
-
 	this.path.add(this.keyboard.children[index].bounds.center);
 	this.path.smooth();
 
 	paper.view.draw();
+
+}
+
+Keyboard.prototype.addToText = function(character) {
+
+	this.text.push(character);
+
+}
+
+Keyboard.prototype.delete = function() {
+
+	this.path.removeSegment(this.path.segments.length-1);
+	this.text.pop();
+
+	paper.view.draw();
+
+}
+
+Keyboard.prototype.sendToPrinter = function() {
+
+	var pathCopy = this.path.clone();
+	var pathBox = new paper.Path.Rectangle(this.debug.boundingBox.bounds);
+	pathBox.strokeColor = new paper.Color(0,0,0,0);
+	pathBox.fillColor = new paper.Color(0,0,0,0);
+
+	pathCopy.strokeColor = {
+		gradient: {
+			stops: [new paper.Color('#000000'), new paper.Color('#000000')]
+		},
+		origin: this.debug.boundingBox.bounds.leftCenter,
+		destination: this.debug.boundingBox.bounds.rightCenter
+	}
+
+	pathCopy.strokeWidth = 12;
+
+	var exports = new paper.Group([pathBox, pathCopy]);
+
+	var svg = exports.exportSVG({ asString: true });
+	console.log(svg);
+
+	ipcRenderer.send('print', this.text.join(''), svg);
+
+	pathBox.remove();
+	pathCopy.remove();
+
+}
+
+Keyboard.prototype.resetAll = function() {
+
+	this.path.removeSegments();
+	this.text = [];
 
 }

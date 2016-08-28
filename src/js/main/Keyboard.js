@@ -9,7 +9,7 @@ function Keyboard() {
 	// @endif
 
 	this.isFullScreen = false;
-	this.frame = new BrowserWindow({
+	this.browserWindow = new BrowserWindow({
 	  width: 800,
 	  height: 600,
 	  frame: false,
@@ -20,26 +20,30 @@ function Keyboard() {
 	  darkTheme: true,
 	});
 
-	this.frame.loadURL('file://' + __dirname + '/src/html/index.html' + '#' + this.id);
+	this.browserWindow.loadURL('file://' + __dirname + '/src/html/index.html' + '#' + this.id);
 
 	this.attachEvents();
 
 	// @if NODE_ENV='development'
-	this.frame.webContents.openDevTools();
+	this.browserWindow.webContents.openDevTools();
 	// @endif
 
 }
 
 Keyboard.prototype.attachEvents = function() {
 
-	this.frame.webContents.on('dom-ready', this.onReady.bind(this));
+	this.browserWindow.webContents.on('dom-ready', this.onReady.bind(this));
+
+	ipcMain.on('print', function(event, text, svg) {
+		this.startPrinting(text, svg);
+	}.bind(this));
 
 }
 
 Keyboard.prototype.onReady = function() {
 
-	this.frame.webContents.send('ready');
-	this.frame.show();
+	this.browserWindow.webContents.send('ready');
+	this.browserWindow.show();
 
 }
 
@@ -47,10 +51,19 @@ Keyboard.prototype.toggleFullScreen = function() {
 
 	// @if NODE_ENV='development'
 	c.log('FULLSCREEN');
-	c.log(this);
 	// @endif
 
 	this.isFullScreen = !this.isFullScreen;
-	this.frame.setFullScreen(this.isFullScreen);
+	this.browserWindow.setFullScreen(this.isFullScreen);
+
+}
+
+Keyboard.prototype.startPrinting = function(text, svg) {
+
+	// @if NODE_ENV='development'
+	c.log('PRINTING');
+	c.log(text);
+	c.log(svg);
+	// @endif
 
 }
