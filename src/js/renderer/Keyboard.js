@@ -10,6 +10,7 @@ function Keyboard(parameters) {
 	this.keyMap = undefined;
 	this.path = new paper.Path();
 	this.graphics = undefined;
+	this.type = undefined;
 
 	this.text = [];
 
@@ -19,7 +20,7 @@ function Keyboard(parameters) {
 	}
 
 	paper.project.importSVG('../keyboard.svg', { onLoad: this.initKeyboard.bind(this), onError: this.onErr.bind(this) });
-	// paper.view.zoom = 0.5;
+	paper.view.zoom = 0.5;
 
 }
 
@@ -30,15 +31,8 @@ Keyboard.prototype.onErr = function(err) {
 Keyboard.prototype.attachEvents = function() {
 
 	window.addEventListener('keydown', function(e) {
-
-		// console.log(e.key);
-		// console.log('Loc', e.location);
-		// var char = String.fromCharCode(e.keyCode);
-		// console.log(char, e.key);
-		
 		this.onKeyDown(e.key.toLowerCase(), e.location);
 		e.preventDefault();
-
 	}.bind(this));
 
 	window.addEventListener('keyup', function(e) {
@@ -174,8 +168,30 @@ Keyboard.prototype.initKeyboard = function(keyboard, svg) {
 		"enter",
 	]
 
-	this.initPath();
+	var returnType = new paper.Raster('return');
+	returnType.position.x = this.keyboard.children[59].bounds.bottomRight.x - returnType.width/2 - 12;
+	returnType.position.y = this.keyboard.children[59].bounds.bottomRight.y - returnType.height/2 - 12;
 
+	var delType = new paper.Raster('del');
+	delType.position.x = this.keyboard.children[47].bounds.bottomRight.x - delType.width/2 - 12;
+	delType.position.y = this.keyboard.children[47].bounds.bottomRight.y - delType.height/2 - 12;
+	// var returnType = new paper.PointText(new paper.Point(this.keyboard.children[59].bounds.bottomRight.x - 12, this.keyboard.children[59].bounds.bottomRight.y - 12));
+	// returnType.justification = 'right';
+	// returnType.fontFamily= 'Roboto';
+
+	// returnType.fillColor = 'white';
+	// returnType.content = 'return';
+
+	// var delType = new paper.PointText(new paper.Point(this.keyboard.children[47].bounds.bottomRight.x - 12, this.keyboard.children[47].bounds.bottomRight.y - 12));
+	// delType.justification = 'right';
+	// delType.fontFamily= 'Roboto';
+
+	// delType.fillColor = 'white';
+	// delType.content = 'del';
+
+	this.type = new paper.Group([returnType, delType]);
+
+	this.initPath();
 	this.resize();
 
 }
@@ -197,7 +213,7 @@ Keyboard.prototype.initPath = function() {
 		destination: this.debug.boundingBox.bounds.rightCenter
 	}
 
-	this.graphics = new paper.Group([this.keyboard, this.path]);
+	this.graphics = new paper.Group([this.keyboard, this.path, this.type]);
 	this.graphics.bringToFront();
 
 }
@@ -259,10 +275,7 @@ Keyboard.prototype.onKeyDown = function(key, location) {
 	}
 
 	if(key == "enter") {
-		if(this.path.segments.length > 1) {
-			this.sendToPrinter();
-			this.resetAll();
-		}
+		paper.view.draw();
 		return;
 	}
 
@@ -279,8 +292,14 @@ Keyboard.prototype.onKeyUp = function(key, location) {
 	this.keyboard.children[index].shadowBlur = 4;
 	this.keyboard.children[index].shadowOffset = new paper.Point(0, 2);
 
-	paper.view.draw();
+	if(key == "enter") {
+		if(this.path.segments.length > 1) {
+			this.sendToPrinter();
+			this.resetAll();
+		}
+	}
 
+	paper.view.draw();
 }
 
 Keyboard.prototype.addToPath = function(index) {

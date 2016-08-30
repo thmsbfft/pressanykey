@@ -87,6 +87,9 @@ body {
   background: transparent;
   -webkit-app-region: drag; }
 
+.images {
+  display: none; }
+
 .flash {
   background: white;
   animation: fade-out 0.8s ease-in;
