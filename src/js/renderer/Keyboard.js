@@ -57,6 +57,7 @@ Keyboard.prototype.resize = function() {
 	// View resize
 	this.canvas.width = window.innerWidth;
 	this.canvas.height = window.innerHeight;
+	this.canvas.style = '';
 	paper.view.viewSize = new paper.Size(window.innerWidth, window.innerHeight);
 
 	// Debug
@@ -307,6 +308,11 @@ Keyboard.prototype.delete = function() {
 }
 
 Keyboard.prototype.sendToPrinter = function() {
+
+	var flash = document.getElementsByClassName('dragOverlay')[0];
+	removeClass(flash, 'flash');
+	void flash.offsetWidth;
+	addClass(flash, 'flash');
 
 	var pathBox = new paper.Path.Rectangle(paper.view.bounds);
 	var pathCopy = this.path.clone();

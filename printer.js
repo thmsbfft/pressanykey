@@ -12,17 +12,8 @@ var imagePath = __dirname + '/images/' + process.argv[3];
 console.log('Text: ', text);
 console.log('Image: ', imagePath);
 
-// SerialPort.list(function(err, ports) {
-// 	ports.forEach(function(port) {
-// 	    console.log(port.comName);
-// 	    console.log(port.pnpId);
-// 	    console.log(port.manufacturer);
-// 	 });
-// });
-
 serialPort.on('open', function() {
 	var printer = new Printer(serialPort);
-	// printer.setLineSpacing(2);
 	printer.on('ready', function() {
 		printer
 			.upsideDown(true)
@@ -39,3 +30,11 @@ serialPort.on('open', function() {
 			});
 	});
 });
+
+// SerialPort.list(function(err, ports) {
+// 	ports.forEach(function(port) {
+// 	    console.log(port.comName);
+// 	    console.log(port.pnpId);
+// 	    console.log(port.manufacturer);
+// 	 });
+// });
