@@ -38,10 +38,6 @@ Keyboard.prototype.attachEvents = function() {
 
 	this.browserWindow.webContents.on('dom-ready', this.onReady.bind(this));
 
-	// ipcMain.on('print', function(event, text, svg) {
-	// 	this.startPrinting(text, svg);
-	// }.bind(this));
-
 	ipcMain.on('print', function(event, text, blob, svg) {
 		this.startPrinting(text, blob, svg);
 	}.bind(this));

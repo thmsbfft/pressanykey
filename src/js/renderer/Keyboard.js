@@ -20,7 +20,7 @@ function Keyboard(parameters) {
 	}
 
 	paper.project.importSVG('../keyboard.svg', { onLoad: this.initKeyboard.bind(this), onError: this.onErr.bind(this) });
-	paper.view.zoom = 0.5;
+	// paper.view.zoom = 0.5;
 
 }
 
@@ -286,11 +286,13 @@ Keyboard.prototype.onKeyDown = function(key, location) {
 
 Keyboard.prototype.onKeyUp = function(key, location) {
 
-	var index = this.locateKey(key, location);
+	for (var i = this.keyboard.children.length - 1; i >= 0; i--) {
+		
+		this.keyboard.children[i].shadowColor = new paper.Color(0,0,0,0.45);
+		this.keyboard.children[i].shadowBlur = 4;
+		this.keyboard.children[i].shadowOffset = new paper.Point(0, 2);
 
-	this.keyboard.children[index].shadowColor = new paper.Color(0,0,0,0.45);
-	this.keyboard.children[index].shadowBlur = 4;
-	this.keyboard.children[index].shadowOffset = new paper.Point(0, 2);
+	}
 
 	if(key == "enter") {
 		if(this.path.segments.length > 1) {
