@@ -1,0 +1,10 @@
+body {
+	background: #808080;
+	color: #fff;
+	font-family: 'Roboto Light', sans-serif;
+	font-weight: 400;
+	font-size: 34px;
+	line-height: 40px;
+	letter-spacing: -1px;
+	@extend .smooth;
+}

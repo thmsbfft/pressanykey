@@ -1,35 +1,32 @@
 {
-  "name": "pressanykey",
-  "productName": "Press Any Key",
-  "version": "0.0.1",
-  "description": "",
+  "name": "TABULA-RASA",
+  "version": "1.0.0",
+  "description": "A clean slate.",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "browser-sync": "^2.10.0",
+    "gulp": "^3.9.0",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-minify-css": "^1.1.6",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.1.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.5.1",
+    "gulp-util": "^3.0.5"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/thmsbfft/pressanykey.git"
+    "url": "https://github.com/thmsbfft/tabula-rasa.git"
   },
-  "main": "main.js",
-  "scripts": {
-    "start": "electron main.js",
-    "build": "gulp build && electron-packager . Press Any Key --overwrite --out=build --app-version=0.0.3 --platform=darwin --arch=x64 --icon=icon.icns --ignore=\"(node_modules/(electron-packager|electron-prebuilt))|(src/sass)|(src/js/main)|(node_modules/gulp-[a-z]+)|build|gulpfile|stdout.log\""
+  "author": "thmsbfft",
+  "license": "MIT",
+  "bugs": {
+    "url": ""
   },
-  "devDependencies": {
-    "electron-localshortcut": "^0.6.0",
-    "electron-packager": "^7.0.4",
-    "electron-prebuilt": "^1.2.5",
-    "gm": "^1.22.0",
-    "gulp": "^3.9.0",
-    "gulp-concat": "^2.6.0",
-    "gulp-copy": "0.0.2",
-    "gulp-exec": "^2.1.2",
-    "gulp-livereload": "^3.8.1",
-    "gulp-preprocess": "^2.0.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-run": "^1.7.1",
-    "gulp-sass": "^2.3.2",
-    "openurl": "^1.1.1",
-    "preprocess": "^3.0.2",
-    "serialport": "^4.0.1",
-    "thermalprinter": "^0.3.8"
-  },
-  "license": "MIT"
+  "homepage": "https://github.com/thmsbfft/"
 }

@@ -1,5 +1,9 @@
-@import "reset.scss";
-@import "animations.scss";
+// Vendor
+@import "global/reset.scss";
 
-@import "fonts.scss";
-@import "global.scss";
+// Global
+@import "global/fonts.scss";
+@import "global/utils.scss";
+@import "global/_global.scss";
+
+// Components
