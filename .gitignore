@@ -1,10 +1,4 @@
-node_modules
-build
 .sass-cache
+node_modules
+www
 .DS_Store
-stdout.log
-/main.js
-src/js/main/_main.js
-src/js/renderer/_renderer.js
-src/css/%
-images
