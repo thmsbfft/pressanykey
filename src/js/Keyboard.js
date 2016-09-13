@@ -47,7 +47,8 @@ Keyboard.prototype.draw = function() {
 	// Init UI
 	this.keyboard = new paper.Group();
 	this.path = new paper.Path();
-	this.graphics = new paper.Group([this.keyboard, this.path]);
+	this.type = new paper.Group();
+	this.graphics = new paper.Group([this.keyboard, this.path, this.type]);
 	this.graphics.bringToFront();
 
 	// Draw UI
@@ -57,10 +58,10 @@ Keyboard.prototype.draw = function() {
 	this.graphics.position = paper.view.center;
 
 	// Debug
-	this.debug.center = new paper.Shape.Circle(new paper.Point(80, 50), 2);
-	this.debug.center.fillColor = "red";
+	// this.debug.center = new paper.Shape.Circle(new paper.Point(80, 50), 2);
+	// this.debug.center.fillColor = "red";
+	// this.debug.center.position = paper.view.center;
 	this.debug.boundingBox = new paper.Path.Rectangle(this.keyboard.bounds);
-	this.debug.center.position = paper.view.center;
 	this.debug.boundingBox.position = paper.view.center;
 
 	paper.view.draw();
@@ -74,10 +75,7 @@ Keyboard.prototype.drawKeyboard = function(props) {
 	var keyboardWidth = Math.round(paper.view.bounds.width*0.9);
 	var margin = Math.round(paper.view.bounds.width*0.007);
 	var keySize = Math.round( (keyboardWidth - 13*margin) / 15.5 );
-
-	console.log(margin);
-	console.log(keyboardWidth);
-	console.log(keySize);
+	var typeSize = paper.view.bounds.width*0.015;
 
 	// Draw first line
 	for (var i = 0; i < 13; i++) {
@@ -147,7 +145,7 @@ Keyboard.prototype.drawKeyboard = function(props) {
 	var alt1Key = new paper.Path.Rectangle(alt1, new paper.Size(4, 4));
 	this.keyboard.addChild(alt1Key);
 
-	// Command1 key is
+	// Command1 key is 4key + 5margins
 	var cmd1 = new paper.Rectangle(new paper.Point(this.keyboard.lastChild.bounds.topRight.x + margin, (keySize + margin) * 4), new paper.Point(keySize*4 + margin*5 - margin, (keySize + margin) * 4 + keySize));
 	var cmd1Key = new paper.Path.Rectangle(cmd1, new paper.Size(4, 4));
 	this.keyboard.addChild(cmd1Key);
@@ -157,11 +155,45 @@ Keyboard.prototype.drawKeyboard = function(props) {
 	var spaceKey = new paper.Path.Rectangle(space, new paper.Size(4, 4));
 	this.keyboard.addChild(spaceKey);
 
+	var cmd2Key = cmd1Key.clone();
+	cmd2Key.position.x = spaceKey.bounds.rightCenter.x + cmd1Key.bounds.width/2 + margin;
+	this.keyboard.addChild(cmd2Key);
+
+	var alt2Key = alt1Key.clone();
+	alt2Key.position.x = this.keyboard.lastChild.bounds.topRight.x + alt1Key.bounds.width/2 + margin;
+	this.keyboard.addChild(alt2Key);
+
+	// Ctrl2 key completes the layout
+	var ctrl2 = new paper.Rectangle(new paper.Point(this.keyboard.lastChild.bounds.topRight.x + margin, (keySize + margin) * 4), new paper.Point(shift2Key.bounds.bottomRight.x, shift2Key.bounds.bottomRight.y + margin + keySize));
+	var ctrl2Key = new paper.Path.Rectangle(ctrl2, new paper.Size(4, 4));
+	this.keyboard.addChild(ctrl2Key);
+
+	// Type
+	var delType = new paper.PointText(new paper.Point(delKey.bounds.bottomRight.x - margin, delKey.bounds.bottomRight.y - margin));
+	delType.justification = 'right';
+	delType.fontSize = typeSize;
+	delType.fontFamily= 'Roboto';
+	delType.fillColor = 'white';
+	delType.content = 'del';
+	this.type.addChild(delType);
+
+	var returnType = new paper.PointText(new paper.Point(rtKey.bounds.bottomRight.x - margin, rtKey.bounds.bottomRight.y - margin));
+	returnType.justification = 'right';
+	returnType.fontSize = typeSize;
+	returnType.fontFamily= 'Roboto';
+	returnType.fillColor = 'white';
+	returnType.content = 'return';
+	this.type.addChild(returnType);
+
+	if(paper.view.bounds.width < 1000) {
+		returnType.content = "•";
+		delType.content = "←";
+	}
 
 	this.keyboard.style = {
 		fillColor: "#808080",
 		strokeColor: new paper.Color(1,1,1,0.4),
-		strokeWidth: 1.1,
+		strokeWidth: 1.5,
 		shadowColor: new paper.Color(0,0,0,0.45),
 		shadowBlur: 4,
 		shadowOffset: new paper.Point(0, 2)
