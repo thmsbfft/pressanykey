@@ -339,8 +339,6 @@ Keyboard.prototype.onKeyDown = function(key, location) {
 
 	var index = this.locateKey(key, location);
 
-	this.pathPoints.push(index);
-
 	this.keyboard.children[index].shadowColor = new paper.Color(0,0,0,0.2);
 	this.keyboard.children[index].shadowBlur = 1;
 	this.keyboard.children[index].shadowOffset = new paper.Point(0, 1);
@@ -355,6 +353,7 @@ Keyboard.prototype.onKeyDown = function(key, location) {
 		return;
 	}
 
+	this.pathPoints.push(index);
 	this.path.add(this.keyboard.children[index].bounds.center);
 	this.path.smooth();
 
@@ -387,6 +386,7 @@ Keyboard.prototype.onKeyUp = function(key, location) {
 Keyboard.prototype.delete = function() {
 
 	this.path.removeSegment(this.path.segments.length-1);
+	this.path.smooth();
 
 	console.log(this.pathPoints);
 
