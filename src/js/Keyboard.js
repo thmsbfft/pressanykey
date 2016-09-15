@@ -115,11 +115,9 @@ Keyboard.prototype.draw = function() {
 	this.type = new paper.Group();
 	this.graphics = new paper.Group([this.keyboard, this.path, this.type]);
 	this.graphics.bringToFront();
+	this.text = [];
 
 	// Debug
-	// this.debug.center = new paper.Shape.Circle(new paper.Point(80, 50), 2);
-	// this.debug.center.fillColor = "red";
-	// this.debug.center.position = paper.view.center;
 	this.debug.boundingBox = new paper.Path.Rectangle(this.keyboard.bounds);
 	this.debug.boundingBox.position = paper.view.center;
 
@@ -269,8 +267,10 @@ Keyboard.prototype.drawKeyboard = function(props) {
 
 Keyboard.prototype.drawPath = function() {
 
+	var strokeWidth = paper.view.bounds.width*0.004 + 1;
+
 	this.path.style = {
-		strokeWidth : 6,
+		strokeWidth : strokeWidth,
 		fillColor: new paper.Color(0,0,0,0),
 		strokeCap : 'round',
 		strokeJoin : 'round'
@@ -280,14 +280,14 @@ Keyboard.prototype.drawPath = function() {
 		gradient: {
 			stops: [new paper.Color('#00FFF4'), new paper.Color('#1F00FF')]
 		},
-		origin: this.debug.boundingBox.bounds.leftCenter,
-		destination: this.debug.boundingBox.bounds.rightCenter
+		origin: paper.view.bounds.leftCenter,
+		destination: paper.view.bounds.rightCenter
 	}
 
-	for (var i = this.pathPoints.length - 1; i >= 0; i--) {
+	for (var i = 0; i <= this.pathPoints.length - 1; i++) {
 		this.path.add(this.keyboard.children[this.pathPoints[i]].bounds.center);
 	}
-
+	
 	this.path.smooth();
 
 }
@@ -295,8 +295,6 @@ Keyboard.prototype.drawPath = function() {
 Keyboard.prototype.locateKey = function(key, location) {
 
 	var index = null
-
-	console.log(key);
 
 	if(location == 1 || location == 0) {
 
@@ -342,7 +340,6 @@ Keyboard.prototype.onKeyDown = function(key, location) {
 	var index = this.locateKey(key, location);
 
 	this.pathPoints.push(index);
-	console.log(this.path.segments);
 
 	this.keyboard.children[index].shadowColor = new paper.Color(0,0,0,0.2);
 	this.keyboard.children[index].shadowBlur = 1;
@@ -361,10 +358,9 @@ Keyboard.prototype.onKeyDown = function(key, location) {
 	this.path.add(this.keyboard.children[index].bounds.center);
 	this.path.smooth();
 
-	paper.view.draw();
+	this.text.push(key);
 
-	// this.addToText(key);
-	// this.addToPath(index);
+	paper.view.draw();
 
 }
 
@@ -380,6 +376,7 @@ Keyboard.prototype.onKeyUp = function(key, location) {
 
 	if(key == "enter") {
 		if(this.path.segments.length > 1) {
+			this.sendToPrinter();
 			this.resetAll();
 		}
 	}
@@ -387,18 +384,40 @@ Keyboard.prototype.onKeyUp = function(key, location) {
 	paper.view.draw();
 }
 
-Keyboard.prototype.addToText = function(character) {
-
-	this.text.push(character);
-
-}
-
 Keyboard.prototype.delete = function() {
 
 	this.path.removeSegment(this.path.segments.length-1);
+
+	console.log(this.pathPoints);
+
+	this.pathPoints.pop();
+	console.log(this.pathPoints);
 	this.text.pop();
 
 	paper.view.draw();
+
+}
+
+Keyboard.prototype.sendToPrinter = function() {
+
+	// Format text for exporting
+	for (var i = this.text.length - 1; i >= 0; i--) {
+		if(this.text[i] == 'meta' || this.text[i] == 'control' || this.text[i] == 'alt' || this.text[i] == 'shift' || this.text[i] == 'tab' || this.text[i] == 'capslock') {
+			this.text[i] = '░';
+		}
+	}
+
+	// Format svg for saving
+	var svg = '<?xml version="1.0" encoding="utf-8"?>';
+	svg += '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="' + paper.view.bounds.width + '" height="' + paper.view.bounds.height + '">';
+	svg += this.path.exportSVG({ asString: true });
+	svg += '</svg>';
+
+	var blob = new Blob([svg], {
+		type: 'data:image/svg+xml'
+	});
+
+	saveAs(blob, this.text.join('') + '.svg');
 
 }
 
