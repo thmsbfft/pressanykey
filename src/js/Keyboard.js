@@ -83,6 +83,7 @@ Keyboard.prototype.init = function() {
 
 	window.addEventListener('keydown', function(e) {
 		this.onKeyDown(e.key.toLowerCase(), e.location);
+		if(e.metaKey || e.ctrlKey || e.altKey) return;
 		e.preventDefault();
 	}.bind(this));
 
@@ -95,11 +96,17 @@ Keyboard.prototype.init = function() {
 		this.draw();
 	}.bind(this));
 
+	window.addEventListener('blur', function(e) {
+		this.onBlur();
+	}.bind(this));
+
+	window.addEventListener('focus', function(e) {
+		this.onFocus();
+	}.bind(this));
+
 }
 
 Keyboard.prototype.draw = function() {
-
-	console.log("draw");
 
 	paper.project.activeLayer.removeChildren();
 
@@ -140,83 +147,88 @@ Keyboard.prototype.drawKeyboard = function(props) {
 	var margin = Math.round(paper.view.bounds.width*0.007);
 	var keySize = Math.round( (keyboardWidth - 13*margin) / 15.5 );
 	var typeSize = paper.view.bounds.width*0.015;
+	var borderRadius = new paper.Size(4, 4);
+
+	if(paper.view.bounds.width < 600) {
+		var borderRadius = new paper.Size(3, 3);
+	}
 
 	// Draw first line
 	for (var i = 0; i < 13; i++) {
 		var path = new paper.Rectangle(new paper.Point(i*(keySize + margin), 0), keySize);
-		var key = new paper.Path.Rectangle(path, new paper.Size(4, 4));
+		var key = new paper.Path.Rectangle(path, borderRadius);
 		this.keyboard.addChild(key);
 	}
 
 	// Del key is 1.5x wider than a Key
 	var del = new paper.Rectangle(new paper.Point(13*(keySize + margin), 0), new paper.Size(keySize*1.5, keySize));
-	var delKey = new paper.Path.Rectangle(del, new paper.Size(4, 4));
+	var delKey = new paper.Path.Rectangle(del, borderRadius);
 	this.keyboard.addChild(delKey);
 
 	// Tab key is 1.5x wider than a Key
 	var tab = new paper.Rectangle(new paper.Point(0, keySize + margin), new paper.Size(keySize*1.5, keySize));
-	var tabKey = new paper.Path.Rectangle(tab, new paper.Size(4, 4));
+	var tabKey = new paper.Path.Rectangle(tab, borderRadius);
 	this.keyboard.addChild(tabKey);
 
 	// Draw second line
 	for (var i = 0; i < 13; i++) {
 		var path = new paper.Rectangle(new paper.Point(i*(keySize + margin) + tabKey.bounds.width + margin, keySize + margin), keySize);
-		var key = new paper.Path.Rectangle(path, new paper.Size(4, 4));
+		var key = new paper.Path.Rectangle(path, borderRadius);
 		this.keyboard.addChild(key);
 	}
 
 	// Capslock key is 1.5x wider than a Key + margin
 	var cl = new paper.Rectangle(new paper.Point(0, (keySize + margin) * 2), new paper.Size(keySize*1.5 + margin, keySize));
-	var clKey = new paper.Path.Rectangle(cl, new paper.Size(4, 4));
+	var clKey = new paper.Path.Rectangle(cl, borderRadius);
 	this.keyboard.addChild(clKey);
 
 	// Draw third line
 	for (var i = 0; i < 11; i++) {
 		var path = new paper.Rectangle(new paper.Point(i*(keySize + margin) + clKey.bounds.width + margin, (keySize + margin) * 2), keySize);
-		var key = new paper.Path.Rectangle(path, new paper.Size(4, 4));
+		var key = new paper.Path.Rectangle(path, borderRadius);
 		this.keyboard.addChild(key);
 	}
 
 	// Return key is 2x wider than a Key
 	var rt = new paper.Rectangle(new paper.Point(this.keyboard.lastChild.bounds.topRight.x + margin, (keySize + margin) * 2), new paper.Size(keySize*2, keySize));
-	var rtKey = new paper.Path.Rectangle(rt, new paper.Size(4, 4));
+	var rtKey = new paper.Path.Rectangle(rt, borderRadius);
 	this.keyboard.addChild(rtKey);
 
 	// Shift key is 2x wider than a Key + 2 x margin
 	var shift = new paper.Rectangle(new paper.Point(0, (keySize + margin) * 3), new paper.Size(keySize*2 + 2 * margin, keySize));
-	var shiftKey = new paper.Path.Rectangle(shift, new paper.Size(4, 4));
+	var shiftKey = new paper.Path.Rectangle(shift, borderRadius);
 	this.keyboard.addChild(shiftKey);
 
 	// Draw fourth line
 	for (var i = 0; i < 10; i++) {
 		var path = new paper.Rectangle(new paper.Point(i*(keySize + margin) + shiftKey.bounds.width + margin, (keySize + margin) * 3), keySize);
-		var key = new paper.Path.Rectangle(path, new paper.Size(4, 4));
+		var key = new paper.Path.Rectangle(path, borderRadius);
 		this.keyboard.addChild(key);
 	}
 
 	// Shift key is 2x wider than a Key + 2 x margin
 	var shift2 = new paper.Rectangle(new paper.Point(this.keyboard.lastChild.bounds.topRight.x + margin, (keySize + margin) * 3), new paper.Point(rtKey.bounds.bottomRight.x, rtKey.bounds.bottomRight.y + margin + keySize));
-	var shift2Key = new paper.Path.Rectangle(shift2, new paper.Size(4, 4));
+	var shift2Key = new paper.Path.Rectangle(shift2, borderRadius);
 	this.keyboard.addChild(shift2Key);
 
 	// Ctrl1 key is 1.5x wider than a Key
 	var ctrl1 = new paper.Rectangle(new paper.Point(0, (keySize + margin) * 4), new paper.Size(keySize*1.5, keySize));
-	var ctrl1Key = new paper.Path.Rectangle(ctrl1, new paper.Size(4, 4));
+	var ctrl1Key = new paper.Path.Rectangle(ctrl1, borderRadius);
 	this.keyboard.addChild(ctrl1Key);
 
 	// Alt1 key is 1x key + 1x margin
 	var alt1 = new paper.Rectangle(new paper.Point(1.5*keySize + margin, (keySize + margin) * 4), new paper.Size(keySize + margin, keySize));
-	var alt1Key = new paper.Path.Rectangle(alt1, new paper.Size(4, 4));
+	var alt1Key = new paper.Path.Rectangle(alt1, borderRadius);
 	this.keyboard.addChild(alt1Key);
 
 	// Command1 key is 4key + 5margins
 	var cmd1 = new paper.Rectangle(new paper.Point(this.keyboard.lastChild.bounds.topRight.x + margin, (keySize + margin) * 4), new paper.Point(keySize*4 + margin*5 - margin, (keySize + margin) * 4 + keySize));
-	var cmd1Key = new paper.Path.Rectangle(cmd1, new paper.Size(4, 4));
+	var cmd1Key = new paper.Path.Rectangle(cmd1, borderRadius);
 	this.keyboard.addChild(cmd1Key);
 
 	// Space key is 6x key + 5x margin
 	var space = new paper.Rectangle(new paper.Point(4*keySize + 5*margin, (keySize + margin) * 4), new paper.Size(6*keySize + 5*margin, keySize));
-	var spaceKey = new paper.Path.Rectangle(space, new paper.Size(4, 4));
+	var spaceKey = new paper.Path.Rectangle(space, borderRadius);
 	this.keyboard.addChild(spaceKey);
 
 	var cmd2Key = cmd1Key.clone();
@@ -229,7 +241,7 @@ Keyboard.prototype.drawKeyboard = function(props) {
 
 	// Ctrl2 key completes the layout
 	var ctrl2 = new paper.Rectangle(new paper.Point(this.keyboard.lastChild.bounds.topRight.x + margin, (keySize + margin) * 4), new paper.Point(shift2Key.bounds.bottomRight.x, shift2Key.bounds.bottomRight.y + margin + keySize));
-	var ctrl2Key = new paper.Path.Rectangle(ctrl2, new paper.Size(4, 4));
+	var ctrl2Key = new paper.Path.Rectangle(ctrl2, borderRadius);
 	this.keyboard.addChild(ctrl2Key);
 
 	// Type
@@ -256,9 +268,9 @@ Keyboard.prototype.drawKeyboard = function(props) {
 
 	this.keyboard.style = {
 		fillColor: "#808080",
-		strokeColor: new paper.Color(1,1,1,0.4),
-		strokeWidth: 1.5,
-		shadowColor: new paper.Color(0,0,0,0.45),
+		strokeColor: new paper.Color(1,1,1,0.25),
+		strokeWidth: 1.25,
+		shadowColor: new paper.Color(0,0,0,0.25),
 		shadowBlur: 4,
 		shadowOffset: new paper.Point(0, 2)
 	}
@@ -267,7 +279,7 @@ Keyboard.prototype.drawKeyboard = function(props) {
 
 Keyboard.prototype.drawPath = function() {
 
-	var strokeWidth = paper.view.bounds.width*0.004 + 1;
+	var strokeWidth = paper.view.bounds.width*0.003 + 1;
 
 	this.path.style = {
 		strokeWidth : strokeWidth,
@@ -304,10 +316,6 @@ Keyboard.prototype.locateKey = function(key, location) {
 			if(this.keyMap[i] == key) index = i;
 		}
 
-		if(index == null) {
-			console.log('No match');
-		}
-
 	}
 	else if(location == 2) {
 
@@ -339,6 +347,8 @@ Keyboard.prototype.onKeyDown = function(key, location) {
 
 	var index = this.locateKey(key, location);
 
+	if(index == null) return;
+
 	this.keyboard.children[index].shadowColor = new paper.Color(0,0,0,0.2);
 	this.keyboard.children[index].shadowBlur = 1;
 	this.keyboard.children[index].shadowOffset = new paper.Point(0, 1);
@@ -367,7 +377,7 @@ Keyboard.prototype.onKeyUp = function(key, location) {
 
 	for (var i = this.keyboard.children.length - 1; i >= 0; i--) {
 		
-		this.keyboard.children[i].shadowColor = new paper.Color(0,0,0,0.45);
+		this.keyboard.children[i].shadowColor = new paper.Color(0,0,0,0.25);
 		this.keyboard.children[i].shadowBlur = 4;
 		this.keyboard.children[i].shadowOffset = new paper.Point(0, 2);
 
@@ -375,7 +385,7 @@ Keyboard.prototype.onKeyUp = function(key, location) {
 
 	if(key == "enter") {
 		if(this.path.segments.length > 1) {
-			this.sendToPrinter();
+			this.download();
 			this.resetAll();
 		}
 	}
@@ -388,23 +398,18 @@ Keyboard.prototype.delete = function() {
 	this.path.removeSegment(this.path.segments.length-1);
 	this.path.smooth();
 
-	console.log(this.pathPoints);
-
 	this.pathPoints.pop();
-	console.log(this.pathPoints);
 	this.text.pop();
 
 	paper.view.draw();
 
 }
 
-Keyboard.prototype.sendToPrinter = function() {
+Keyboard.prototype.download = function() {
 
 	// Format text for exporting
 	for (var i = this.text.length - 1; i >= 0; i--) {
-		if(this.text[i] == 'meta' || this.text[i] == 'control' || this.text[i] == 'alt' || this.text[i] == 'shift' || this.text[i] == 'tab' || this.text[i] == 'capslock') {
-			this.text[i] = '░';
-		}
+		if(this.text[i] == ' ') this.text[i] = 'space';
 	}
 
 	// Format svg for saving
@@ -417,13 +422,68 @@ Keyboard.prototype.sendToPrinter = function() {
 		type: 'data:image/svg+xml'
 	});
 
-	saveAs(blob, this.text.join('') + '.svg');
+	saveAs(blob, this.text.join('_') + '.svg');
 
 }
 
 Keyboard.prototype.resetAll = function() {
 
 	this.path.removeSegments();
+	this.pathPoints = [];
 	this.text = [];
+
+}
+
+Keyboard.prototype.onBlur = function() {
+
+	this.type.children[0].fillColor = new paper.Color(1, 1, 1, 0.55);
+	this.type.children[1].fillColor = new paper.Color(1, 1, 1, 0.55);
+
+	this.path.strokeColor = new paper.Color(0, 0, 1, 0.2);
+
+	this.keyboard.style = {
+		fillColor: "#808080",
+		strokeColor: new paper.Color(1,1,1,0.2),
+		strokeWidth: 1.25,
+		shadowColor: new paper.Color(0,0,0,0.15),
+		shadowBlur: 4,
+		shadowOffset: new paper.Point(0, 2)
+	}
+
+	this.type.style = {
+		opacity: 0
+	}
+
+	paper.view.draw();
+
+}
+
+Keyboard.prototype.onFocus = function() {
+
+	this.type.children[0].fillColor = new paper.Color(1, 1, 1, 1);
+	this.type.children[1].fillColor = new paper.Color(1, 1, 1, 1);
+
+	this.path.strokeColor = {
+		gradient: {
+			stops: [new paper.Color('#00FFF4'), new paper.Color('#1F00FF')]
+		},
+		origin: paper.view.bounds.leftCenter,
+		destination: paper.view.bounds.rightCenter
+	}
+
+	this.keyboard.style = {
+		fillColor: "#808080",
+		strokeColor: new paper.Color(1,1,1,0.25),
+		strokeWidth: 1.25,
+		shadowColor: new paper.Color(0,0,0,0.25),
+		shadowBlur: 4,
+		shadowOffset: new paper.Point(0, 2)
+	}
+
+	this.type.style = {
+		opacity: 1
+	}
+
+	paper.view.draw();
 
 }
