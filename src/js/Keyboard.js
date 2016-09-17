@@ -146,7 +146,7 @@ Keyboard.prototype.drawKeyboard = function(props) {
 	var keyboardWidth = Math.round(paper.view.bounds.width*0.9);
 	var margin = Math.round(paper.view.bounds.width*0.007);
 	var keySize = Math.round( (keyboardWidth - 13*margin) / 15.5 );
-	var typeSize = paper.view.bounds.width*0.015;
+	var typeSize = paper.view.bounds.width*0.013;
 	var borderRadius = new paper.Size(4, 4);
 
 	if(paper.view.bounds.width < 600) {
@@ -439,7 +439,7 @@ Keyboard.prototype.onBlur = function() {
 	this.type.children[0].fillColor = new paper.Color(1, 1, 1, 0.55);
 	this.type.children[1].fillColor = new paper.Color(1, 1, 1, 0.55);
 
-	this.path.strokeColor = new paper.Color(0, 0, 1, 0.2);
+	this.path.strokeColor = new paper.Color(0, 1, 1, 0.4);
 
 	this.keyboard.style = {
 		fillColor: "#808080",
