@@ -10,7 +10,7 @@ var Loader = {
 	},
 
 	load: function(manifest, onLoaded) {
-		console.log('Loading:', manifest[0].src);
+		// console.log('Loading:', manifest[0].src);
 		var q = this.queue;
 		q.on('complete', onLoaded);
 		q.loadManifest(manifest);
@@ -21,15 +21,15 @@ var Loader = {
 	},
 
 	onLoadCompleted: function() {
-		console.log('Load Completed');
+		// console.log('Load Completed');
 	},
 
 	onLoadError: function() {
-		console.log('Load Error');
+		// console.log('Load Error');
 	},
 
 	onLoadProgress: function() {
-		console.log('.');
+		// console.log('.');
 	},
 	
 };

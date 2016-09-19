@@ -21,8 +21,8 @@ var App = {
 
 	initialTransitionIn: function() {
 		this.container.classList.add('fade-in');
-		console.log('[PAN] ☑️');
 		Keyboard = new Keyboard();
+		Toot = new Toot();
 	},
 
 	dispose: function() {

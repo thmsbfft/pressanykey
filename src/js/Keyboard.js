@@ -356,12 +356,15 @@ Keyboard.prototype.onKeyDown = function(key, location) {
 		paper.view.draw();
 		return;
 	}
+	
+	Toot.tut(this.keyboard.children[index].bounds.center.x, this.keyboard.children[index].bounds.center.y);
 
 	this.pathPoints.push(index);
 	this.path.add(this.keyboard.children[index].bounds.center);
 	this.path.smooth();
 
 	this.text.push(key);
+
 
 	paper.view.draw();
 
@@ -384,7 +387,10 @@ Keyboard.prototype.onKeyUp = function(key, location) {
 		}
 	}
 
+	Toot.shh();
+
 	paper.view.draw();
+
 }
 
 Keyboard.prototype.delete = function() {
@@ -400,6 +406,8 @@ Keyboard.prototype.delete = function() {
 }
 
 Keyboard.prototype.download = function() {
+
+	Toot.tada();
 
 	// Format text for exporting
 	for (var i = this.text.length - 1; i >= 0; i--) {
@@ -429,6 +437,8 @@ Keyboard.prototype.resetAll = function() {
 }
 
 Keyboard.prototype.onBlur = function() {
+
+	Toot.shh();
 
 	this.type.children[0].fillColor = new paper.Color(1, 1, 1, 0.55);
 	this.type.children[1].fillColor = new paper.Color(1, 1, 1, 0.55);

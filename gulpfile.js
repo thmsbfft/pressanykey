@@ -13,7 +13,8 @@ var gulp         = require('gulp'),
 var vendor = [
     'src/js/vendor/FileSaver.min.js',
     'src/js/vendor/preloadjs-0.6.1.min.js',
-	'src/js/vendor/paper.js',
+    'src/js/vendor/paper.js',
+	'src/js/vendor/Tone.min.js',
 	'src/js/vendor/*.js'
 ];
 
@@ -21,6 +22,7 @@ var scripts = [
     'src/js/loader.js',
     'src/js/app.js',
     'src/js/Keyboard.js',
+    'src/js/Toot.js',
 	'src/js/index.js'
 ];
 
