@@ -288,13 +288,7 @@ Keyboard.prototype.drawPath = function() {
 		strokeJoin : 'round'
 	}
 
-	this.path.strokeColor = {
-		gradient: {
-			stops: [new paper.Color('#00FFF4'), new paper.Color('#1F00FF')]
-		},
-		origin: paper.view.bounds.leftCenter,
-		destination: paper.view.bounds.rightCenter
-	}
+	this.path.strokeColor = new paper.Color(1, 1, 0, 0.6);
 
 	for (var i = 0; i <= this.pathPoints.length - 1; i++) {
 		this.path.add(this.keyboard.children[this.pathPoints[i]].bounds.center);
@@ -439,7 +433,7 @@ Keyboard.prototype.onBlur = function() {
 	this.type.children[0].fillColor = new paper.Color(1, 1, 1, 0.55);
 	this.type.children[1].fillColor = new paper.Color(1, 1, 1, 0.55);
 
-	this.path.strokeColor = new paper.Color(0, 1, 1, 0.4);
+	this.path.strokeColor = new paper.Color(1, 1, 0, 0.4);
 
 	this.keyboard.style = {
 		fillColor: "#808080",
@@ -463,13 +457,7 @@ Keyboard.prototype.onFocus = function() {
 	this.type.children[0].fillColor = new paper.Color(1, 1, 1, 1);
 	this.type.children[1].fillColor = new paper.Color(1, 1, 1, 1);
 
-	this.path.strokeColor = {
-		gradient: {
-			stops: [new paper.Color('#00FFF4'), new paper.Color('#1F00FF')]
-		},
-		origin: paper.view.bounds.leftCenter,
-		destination: paper.view.bounds.rightCenter
-	}
+	this.path.strokeColor = new paper.Color(1, 1, 0, 0.6);
 
 	this.keyboard.style = {
 		fillColor: "#808080",

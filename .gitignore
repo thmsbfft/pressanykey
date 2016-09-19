@@ -1,4 +1,4 @@
 .sass-cache
 node_modules
-www
+www/**
 .DS_Store
