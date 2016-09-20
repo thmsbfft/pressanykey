@@ -365,7 +365,6 @@ Keyboard.prototype.onKeyDown = function(key, location) {
 
 	this.text.push(key);
 
-
 	paper.view.draw();
 
 }
@@ -394,6 +393,8 @@ Keyboard.prototype.onKeyUp = function(key, location) {
 }
 
 Keyboard.prototype.delete = function() {
+
+	if(this.path.segments.length > 0) Toot.brr();
 
 	this.path.removeSegment(this.path.segments.length-1);
 	this.path.smooth();
