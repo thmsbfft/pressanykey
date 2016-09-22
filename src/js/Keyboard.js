@@ -10,7 +10,7 @@ function Keyboard(parameters) {
 	this.props = {};
 
 	paper.setup(this.canvas);
-	
+
 	this.init();
 	this.draw();
 
@@ -111,10 +111,14 @@ Keyboard.prototype.draw = function() {
 	paper.project.activeLayer.removeChildren();
 
 	// View resize
-	this.canvas.width = window.innerWidth;
-	this.canvas.height = window.innerHeight;
 	this.canvas.style = '';
-	paper.view.viewSize = new paper.Size(window.innerWidth, window.innerHeight);
+	if(window.devicePixelRatio >= 2) {
+		paper.view.viewSize = new paper.Size(window.innerWidth*2, window.innerHeight*2);
+		this.canvas.style.transform = "scale(0.5) translate(-" + window.innerWidth + "px, -" + window.innerHeight + "px)";
+	}
+	else {
+		paper.view.viewSize = new paper.Size(window.innerWidth, window.innerHeight);
+	}
 
 	// Init UI
 	this.keyboard = new paper.Group();
