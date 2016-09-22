@@ -4,5 +4,6 @@
 
 – 2016
 
-🎨 Paper.js    Jürg Lehni & Jonathan Puckey • [http://paperjs.org/](http://paperjs.org/)
-🎵 Tone.js     Yotam Mann • [https://github.com/Tonejs/Tone.js](https://github.com/Tonejs/Tone.js)
+🎨 Paper.js – Jürg Lehni & Jonathan Puckey • [http://paperjs.org/](http://paperjs.org/)
+
+🎵 Tone.js –Yotam Mann • [https://github.com/Tonejs/Tone.js](https://github.com/Tonejs/Tone.js)
