@@ -11,18 +11,18 @@ var App = {
 	initialLoad: function() {
 		Loader.load([
 			{id: 'homepage', src: 'data/homepage.html'}
-		], this.loadCompleted.bind(this)); // Binding allows to keep the App scope on callback
+		], this.loadCompleted.bind(this));
 	},
 
 	loadCompleted: function() {
 		this.container.innerHTML = Loader.getContentById('homepage');
 		this.initialTransitionIn();
+		Keyboard = new Keyboard();
+		Toot = new Toot();
 	},
 
 	initialTransitionIn: function() {
 		this.container.classList.add('fade-in');
-		Keyboard = new Keyboard();
-		Toot = new Toot();
 	},
 
 	dispose: function() {

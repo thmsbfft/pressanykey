@@ -3,11 +3,25 @@ function Keyboard(parameters) {
 	this.el = document.querySelectorAll('main')[0];
 	this.canvas = document.getElementsByTagName('canvas')[0];
 
+	this.isRetina = window.matchMedia('screen and (min-resolution: 2dppx)').matches;
+
 	this.keyMap = undefined;
 	this.pathPoints = [];
 
 	this.debug = {};
 	this.props = {};
+
+	window.matchMedia('screen and (min-resolution: 2dppx)').addListener(function(e) {
+		if (e.matches) {
+			this.isRetina = true;
+		} 
+		else {
+			this.isRetina = false;
+		}
+		
+		this.draw();
+
+    }.bind(this));
 
 	paper.setup(this.canvas);
 
@@ -112,7 +126,7 @@ Keyboard.prototype.draw = function() {
 
 	// View resize
 	this.canvas.style = '';
-	if(window.devicePixelRatio >= 2) {
+	if(this.isRetina) {
 		paper.view.viewSize = new paper.Size(window.innerWidth*2, window.innerHeight*2);
 		this.canvas.style.transform = "scale(0.5) translate(-" + window.innerWidth + "px, -" + window.innerHeight + "px)";
 	}
